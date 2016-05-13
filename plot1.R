@@ -1,0 +1,16 @@
+mydata<-read.table("household_power_consumption.txt",header=TRUE,quote="",sep=";",dec=".",stringsAsFactors = FALSE)
+step1<-subset(mydata,as.Date(Date,"%d/%m/%Y")=="2007-02-02" | as.Date(Date,"%d/%m/%Y")=="2007-02-01")
+step1$Time<-strftime(strptime(step1$Time,"%R"),"%H:%M")
+install.packages("stringr")
+library(stringr)
+step1$Time<-str_replace(step1$Time,":",".")
+step2<-data.frame(cbind(step1$Time,step1$Global_active_power))
+names(step2)<-c("readingTime","activePower")
+step2$readingTime<-as.numeric(as.character(step2$readingTime))
+step2$activePower<-as.numeric(as.character(step2$activePower))
+step3<-step2[order(step2$readingTime),]
+par(mfrow=c(1,1),mar=c(4,4,2,1))
+hist(step3$activePower,main="Global Active Power",ylab="Frequency",xlab="Global Active Power (kilowatts)",col="red")
+
+dev.copy(png,file="plot1.png",width=480,height=480)
+dev.off()
